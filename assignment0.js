@@ -1,6 +1,5 @@
-
 let GL, vao, program1, program2;
-let currColor = [0, 0, 0, 0];
+let currColor = [0, 0, 0, 1.0];
 let currTriangles = 1;
 let maxTriangles = 1;
 let useJSON = false;
@@ -9,8 +8,18 @@ window.updateTriangles = function() {
 }
 
 window.updateColor = function() {
+    var redValue = document.getElementById("sliderR").value;
+    var greenValue = document.getElementById("sliderG").value;
+    var blueValue = document.getElementById("sliderB").value;
 
+    var red = redValue/255;
+    var green = greenValue/255;
+    var blue = blueValue/255;
+
+    currColor = [red, green, blue, 1.0];
+    //console.log(red + ',' + green + ',' + blue);
 }
+
 
 window.checkBox = function() {
     
@@ -26,6 +35,7 @@ async function createPrograms() {
 
 function createShader(source, type) {
     // create shader
+
 };
 
 function createBuffer(vertices) {
@@ -37,16 +47,10 @@ function createVAO(posAttribLoc, posBuffer, colAttribLoc, colBuffer) {
 }
 
 function draw() {
-
-    // bind vao
-    // use program
-    // draw arrays
-};
-
-async function initialize() {
-    const canvas = document.querySelector("#canvas");
+    //console.log("this is working");
+    var canvas = document.querySelector("#canvas");
     // Initialize the GL context
-    const gl = canvas.getContext("webgl");
+    var gl = canvas.getContext("webgl");
 
     // Only continue if WebGL is available and working
     if (gl === null) {
@@ -57,12 +61,40 @@ async function initialize() {
     }
 
     // Set clear color to black, fully opaque
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(...currColor);
     // Clear the color buffer with specified clear color
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     // initialive canvas
     // create programs
     // draw
+    //console.log("canvas created");
+    // bind vao
+    // use program
+    // draw arrays
 };
- 
+
+async function initialize() {
+    draw();
+
+    var redSlider = document.getElementById("sliderR");
+    var greenSlider = document.getElementById("sliderG");
+    var blueSlider = document.getElementById("sliderB");
+
+    redSlider.oninput = function(){
+        updateColor();
+        draw();
+    }
+
+    greenSlider.oninput = function(){
+        updateColor();
+        draw();
+    }
+
+    blueSlider.oninput = function(){
+        updateColor();
+        draw();
+    }
+    
+};
+
 window.onload = initialize;
