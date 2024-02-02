@@ -1,5 +1,5 @@
 let GL, vao, program1, program2;
-let currColor = [0, 0, 0, 1.0];
+let currColor = [1, 1, 1, 1.0];
 let currTriangles = 1;
 let maxTriangles = 1;
 let useJSON = false;
@@ -7,6 +7,7 @@ let useJSON = false;
 window.updateTriangles = function() {
 }
 
+//update the color based on the RGB slider values
 window.updateColor = function() {
     var redValue = document.getElementById("sliderR").value;
     var greenValue = document.getElementById("sliderG").value;
@@ -26,7 +27,32 @@ window.checkBox = function() {
 }
 
 function uploadFile(event) {
+    //console.log("uploadFile function");
     // load file and create buffers
+        const fileInput = document.getElementById("myFile");
+
+
+        if(fileInput.files.length > 0){
+            if(fileInput.files[0].type != 'application/json'){
+                alert("Please upload JSON file");
+                return;
+            }
+            //console.log("uploadFile function 2");
+            const fr = new FileReader();
+
+            fr.readAsText(fileInput.files[0]);
+
+            fr.addEventListener('load', ()=>{
+                const jsonData = JSON.parse(fr.result);
+                //let keysinobj = Object.keys(jsonData);
+                let posBuffer = jsonData.positions;
+                let colBuffer = jsonData.colors;
+                console.log("uploaded JSON data:", jsonData);
+                console.log(Object.keys(jsonData).length);
+                //console.log(keysinobj.length);
+                //console.log(posBuffer);
+            });
+        }
 }
 
 async function createPrograms() { 
@@ -39,6 +65,12 @@ function createShader(source, type) {
 };
 
 function createBuffer(vertices) {
+    var canvas = document.querySelector("#canvas");
+    var gl = canvas.getContext("webgl");
+    var positionBuffer = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices2D), gl.STATIC_DRAW);
     // create buffer
 }
 
@@ -60,7 +92,7 @@ function draw() {
         return;
     }
 
-    // Set clear color to black, fully opaque
+    // Set clear color to white, fully opaque
     gl.clearColor(...currColor);
     // Clear the color buffer with specified clear color
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -94,7 +126,9 @@ async function initialize() {
         updateColor();
         draw();
     }
-    
+
+    var fileInput = document.getElementById("myFile");
+    fileInput.addEventListener("change", uploadFile);
 };
 
 window.onload = initialize;
